@@ -1,10 +1,3 @@
-//
-//  MVVMRxSwiftTests.swift
-//  MVVMRxSwiftTests
-//
-//  Created by Tiz on 25/12/21.
-//
-
 @testable import MVVMRxSwift
 import XCTest
 

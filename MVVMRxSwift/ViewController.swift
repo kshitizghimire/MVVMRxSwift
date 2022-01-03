@@ -1,10 +1,3 @@
-//
-//  ViewController.swift
-//  MVVMRxSwift
-//
-//  Created by Tiz on 25/12/21.
-//
-
 import RxCocoa
 import RxDataSources
 import RxSwift

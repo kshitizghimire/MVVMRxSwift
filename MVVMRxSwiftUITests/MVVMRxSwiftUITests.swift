@@ -1,10 +1,3 @@
-//
-//  MVVMRxSwiftUITests.swift
-//  MVVMRxSwiftUITests
-//
-//  Created by Tiz on 25/12/21.
-//
-
 import XCTest
 
 class MVVMRxSwiftUITests: XCTestCase {
