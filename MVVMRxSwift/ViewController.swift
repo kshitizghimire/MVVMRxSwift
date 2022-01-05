@@ -20,7 +20,7 @@ class ViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.register(Cell.self, forCellReuseIdentifier: "Cell")
-        let dataSource = RxTableViewSectionedReloadDataSource<SectionOfCustomData>(
+        let dataSource = RxTableViewSectionedReloadDataSource<Section>(
             configureCell: { _, tableView, indexPath, item in
                 let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
                 cell.textLabel?.text = "Item \(item.title)"
@@ -36,6 +36,12 @@ class ViewController: UITableViewController {
 
         Observable.just(viewModel.sections)
             .bind(to: tableView.rx.items(dataSource: dataSource))
+            .disposed(by: disposeBag)
+
+        tableView.rx.modelSelected(CustomData.self)
+            .subscribe { modal in
+                print(modal)
+            }
             .disposed(by: disposeBag)
     }
 }
