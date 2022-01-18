@@ -17,9 +17,27 @@ class ViewController: UITableViewController {
     let viewModel: ViewModel
     let disposeBag = DisposeBag()
 
+    let button = UIButton()
+
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        viewModel.loadTrigger.accept(())
+
+        configureDisplay()
+        configurePresentation()
+        configureInteraction()
+    }
+
+    func configureDisplay() {
         tableView.register(Cell.self, forCellReuseIdentifier: "Cell")
+        tableView.delegate = nil
+        tableView.dataSource = nil
+
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.add, target: nil, action: nil)
+    }
+
+    func configurePresentation() {
         let dataSource = RxTableViewSectionedReloadDataSource<Section>(
             configureCell: { _, tableView, indexPath, item in
                 let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
@@ -31,17 +49,28 @@ class ViewController: UITableViewController {
             dataSource.sectionModels[index].header
         }
 
-        tableView.delegate = nil
-        tableView.dataSource = nil
-
-        Observable.just(viewModel.sections)
-            .bind(to: tableView.rx.items(dataSource: dataSource))
+        viewModel.tableData
+            .drive(tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
 
-        tableView.rx.modelSelected(CustomData.self)
-            .subscribe { modal in
-                print(modal)
+        viewModel.nextViewModel
+            .drive { [unowned self] _ in
+                self.show(UIViewController(), sender: self)
             }
+            .disposed(by: disposeBag)
+    }
+
+    func configureInteraction() {
+        tableView.rx.modelSelected(CustomData.self)
+            .bind(to: viewModel.selectedRow)
+            .disposed(by: disposeBag)
+
+        navigationItem.rightBarButtonItem?.rx.tap
+            .bind(to: viewModel.nextTrigger)
+            .disposed(by: disposeBag)
+
+        button.rx.controlEvent(.primaryActionTriggered)
+            .bind(to: viewModel.loadTrigger)
             .disposed(by: disposeBag)
     }
 }
